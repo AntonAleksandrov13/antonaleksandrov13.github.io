@@ -1,0 +1,20 @@
+# Dependencies
+markdown:         kramdown
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Anton's blog
+description:      'DevOps engineer passion towards AWS Cloud, Kubernetes, RaspberryPI and IoT projects'
+url:              https://github.com/AntonAleksandrov13
+baseurl:          /
+
+author:
+  name:           'Anton Aleksandrov'
+  url:            https://github.com/AntonAleksandrov13
+
+paginate:         5
+
+
