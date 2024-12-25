@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      TIL &middot; Anton's blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          Anton's blog
+        </a>
+      </h1>
+      <p class="lead">DevOps engineer passion towards AWS Cloud, Kubernetes, RaspberryPI and IoT projects</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item active" href="/til/">TIL</a>
+          
+        
+      
+
+      <a class="sidebar-nav-item" href="https://github.com/AntonAleksandrov13">My GitHub</a>
+    </nav>
+
+    <p>&copy; 2024. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="page">
+  <h1 class="page-title">TIL</h1>
+  <p class="message">
+  This is a collection of notes and remarks I have compiled about tech. Hopefully, this will prove useful when I want to look back at my tech knowledge. 
+</p>
+
+<h3 id="17102023">17.10.2023</h3>
+<p>AWS CloudWatch Log groups can only have two subscriptions with filtering. So, if you need to trigger a Lambda function based on log containing a string, you would have to implement:</p>
+<ol>
+  <li>Create a CloudWatch metric based on a search pattern</li>
+  <li>Create a CloudWatch alarm based of the metric</li>
+  <li>Push notification to SNS on <code>IN ALARM</code> event</li>
+  <li>Create a Lambda function with SNS trigger</li>
+  <li>Query CloudWatch Logs from the function to get the log line that originally triggered that CloudWatch alarm</li>
+</ol>
+
+<h3 id="15102023">15.10.2023</h3>
+<p><code>nslookup</code> and <code>dscacheutil</code> might produce different DNS lookup results on MacOS. This is related to the fact that <code>nslookup</code> does use MacOS DNS resolvers, while <code>dscacheutil</code> does.</p>
+
+<h3 id="12102023">12.10.2023</h3>
+<p>Not that many Docker images are built for <code>arm v7</code> architecture. Thus, I have to rebuild every Docker image I want to use on my home lab Kubernetes cluster locally.</p>
+
+</div>
+
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      (Re)setting up my home Raspberry PI cluster - part 1 &middot; Anton's blog
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body>
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          Anton's blog
+        </a>
+      </h1>
+      <p class="lead">DevOps engineer passion towards AWS Cloud, Kubernetes, RaspberryPI and IoT projects</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/til/">TIL</a>
+          
+        
+      
+
+      <a class="sidebar-nav-item" href="https://github.com/AntonAleksandrov13">My GitHub</a>
+    </nav>
+
+    <p>&copy; 2024. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">(Re)setting up my home Raspberry PI cluster - part 1</h1>
+  <span class="post-date">25 Dec 2024</span>
+  <h2 id="introduction">Introduction</h2>
+<p>A while back I was working on setting up 3 RPIs based on <a href="https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/">this guide</a>.
+Back then I was too excited to play around with new hardware and set up everything as soon as possible. I did not really account for the fact stuff might break and there is no real option how to restore it.
+Of course, I could have followed the same guide from scratch, but how many times would I have to repeat the same process? Dreading this process, I have set this project on a shelf.</p>
+
+<p>In my day job just like any good SRE engineer, I am guided by DevOps principles of having repeatable processes. That’s why the tools like Terraform, CloudCDK, Packer and Ansible are this popular and relevant right now in my opinion.</p>
+
+<p>So I thought that this holiday season, I will slow down the process a bit and re-assemble my cluster and configure a proper process around it.</p>
+
+<p>It is worth noting that this project is heavily influenced by <a href="https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/">the original guide</a> I have used initially.
+Usage of Ansible for this project is inspired by <a href="https://www.ansiblefordevops.com">www.ansiblefordevops.com</a> and other Jeff Geerling projects.</p>
+
+<h2 id="what-do-we-have">What do we have?</h2>
+<ol>
+  <li>3 Rapsberry Pis 4B model</li>
+  <li>3 PoE hats</li>
+  <li>Uctronics Complete Enclosure for Raspberry Pi Clusters</li>
+  <li>2 8cm cooling fans</li>
+  <li>Netgear GS305P unmanaged switch</li>
+  <li>3 Ethernet cables</li>
+  <li>A few old USB 3.0 and C cables</li>
+</ol>
+
+<h2 id="what-is-the-end-goal">What is the end goal?</h2>
+<p>The idea is to have one RPI(we will call it a head node until a proper name is given) acting as a router and hosting DHCP server. Other RPIs would get IPs in a dedicated subnet and communicate with the outside world through the head node.
+I still want to preserve possibility of connecting to nodes using their home network IPs. This way I can preserve access if I break the head node.</p>
+
+<p><img src="../public/ascii-rpi-topology.png" alt="ascii-rpi-topology.png" /></p>
+
+<h2 id="fans-set-up">Fans set up</h2>
+
+<p>Last time I was setting up this cluster, I have cut some corners because I did not have soldering station, but this time I ready to set thing right.
+Two fans came with standard pin connector. It is not an option to use GPIO to power them up as PoE hat will take all the pins. I have used some of my old USB cables and got a pair of USB powered fans.</p>
+
+<p><img src="../public/fans.jpeg" alt="fans.jpeg" /></p>
+
+<h2 id="switch-with-poe">Switch with PoE</h2>
+<p><img src="../public/netgear-switch.jpeg" alt="netgear-switch.jpeg" />
+This allowed for a “clean” looking setup without extra power cables and power sources.</p>
+
+<h2 id="rpis-setup">RPIs setup</h2>
+
+<p>The setup is fairly straight forward. PoE hats were mounted on the top of GPIO pins.</p>
+
+<p><img src="../public/rpi-with-poe.jpeg" alt="rpi-with-poe.jpeg" /></p>
+
+<p>For this project, I have decided to use Raspberry Pi OS Lite as I am planning to have a Kubernetes cluster here later on.</p>
+
+<p>So it was very convenient to use  Raspberry PI Imager to configure WLAN access and hostnames.</p>
+
+<h2 id="node-naming">Node naming</h2>
+<p>Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion.</p>
+
+<p><img src="../public/magi-eva.webp" alt="magi-eva.webp" /></p>
+
+<h2 id="booting-up-the-first-node">Booting up the first node</h2>
+
+<p><img src="../public/first-rpi-connected.jpeg" alt="first-rpi-connected.jpeg" />
+As soon as a SD card was installed and Ethernet cable is connected the head node - Caspar was booting up.</p>
+
+<p>Now, to connect to Casoar we need its IP first. As I have managed to forget admin password from my router, I had to dust up my apr knowledge with a useful arp-scan utility:</p>
+
+<pre><code class="language-shell">$ sudo arp-scan --interface=en0 192.168.0.0/24
+Password:
+Interface: en0, type: EN10MB, MAC: &lt;REDACTED&gt;, IPv4: 192.168.0.249
+Starting arp-scan 1.10.0 with 256 hosts (https://github.com/royhills/arp-scan)
+192.168.0.1	50:91:e3:b9:80:8c	(Unknown)
+192.168.0.90	12:b4:c6:3a:3d:44	(Unknown: locally administered)
+192.168.0.121	8e:f6:38:a3:fa:53	(Unknown: locally administered)
+192.168.0.177	26:41:24:e0:3b:b7	(Unknown: locally administered)
+192.168.0.202	e4:5f:01:fc:a9:94	Raspberry Pi Trading Ltd
+
+526 packets received by filter, 0 packets dropped by kernel
+Ending arp-scan 1.10.0: 256 hosts scanned in 1.833 seconds (139.66 hosts/sec). 4 responded
+</code></pre>
+
+<p>Knowing Caspar’s IP we can test out some Ansible .</p>
+
+<p>I have created <code>inventory.ini</code> with the following content:</p>
+
+<pre><code>[magi]
+192.168.0.202
+</code></pre>
+
+<p>Using this file we can get free memory on the device using the following command:</p>
+
+<pre><code class="language-shell">$ ansible magi -a "free -h" -u pi
+
+192.168.0.202 | CHANGED | rc=0 &gt;&gt;
+               total        used        free      shared  buff/cache   available
+Mem:           3.7Gi       174Mi       3.5Gi       1.2Mi       139Mi       3.5Gi
+Swap:          511Mi          0B       511Mi
+</code></pre>
+
+<p>Okay, now that we know that Caspar is live and kicking we start implementing its router capabilities.</p>
+
+<h2 id="dhcp-setup">DHCP setup</h2>
+
+<p>We will use a playbook to set up DHCP server which we will call <code>dhcp-setup-playbook.yaml</code>.</p>
+
+<p>First of all, we want to run <code>apt-get update</code> and <code>apt-get upgrade -y</code> on our system to make sure that we stay up to date. For this will add the following content into this notebook:</p>
+
+<pre><code class="language-yaml">- name: DHCP setup
+  hosts: magi[0] #we want to run this playbook only on Caspar
+  become: yes #at least most of the commands will require super user access
+  tasks:
+    - name: Update the package list
+      apt:
+        update_cache: yes
+    
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+</code></pre>
+
+<p>Currently, <code>eth0</code> is disconnected, but it has a connection available. Its status can be checked through <code>ifconfig</code> or <code>nmcli</code>.</p>
+<pre><code>eth0: disconnected
+        "eth0"
+        1 connection available
+        ethernet (bcmgenet), e4:5f:01:fc:a9:93, hw, mtu 1500
+
+</code></pre>
+<p>We need to add a few tasks to connect <code>eth0</code>:</p>
+
+<pre><code class="language-yaml">- name: Check if eth0 is disconnected
+  ansible.builtin.shell:
+    cmd: "nmcli device status | grep -E '^eth0' | awk '{print $3}'"
+  register: eth0_status
+  failed_when: eth0_status.rc != 0 and 'eth0' not in eth0_status.stdout
+
+- name: Debug the status of eth0
+  debug:
+    msg: "Interface eth0 is currently "
+</code></pre>
+
+<p>This would allow us to check the status of <code>eth0</code>. We don’t want to reconfigure it if <code>eth0</code> is already connected.
+Then based on guide let’s modify the connection and restart it only if it is in status <code>disconnected</code> or <code>connecting</code>(about this status I have learnt accidentally, when I have wiped Caspar clean to test out all my playbooks from scratch. It seems to appear when the system is loading and interfaces trying to figure out their status).</p>
+
+<pre><code class="language-yaml">    - name: Configure Wired connection 1 with static IP
+      when: eth0_status.stdout in ["disconnected", "connecting"]
+      ansible.builtin.command:
+        cmd: nmcli con mod "Wired connection 1" ipv4.addresses  ipv4.method manual
+
+    - name: Bring Wired connection 1 down
+      when: eth0_status.stdout in ["disconnected", "connecting"]
+      ansible.builtin.command:
+        cmd: nmcli con down "Wired connection 1"
+
+    - name: Bring Wired connection 1 up
+      when: eth0_status.stdout in ["disconnected", "connecting"]
+      ansible.builtin.command:
+        cmd: nmcli con up "Wired connection 1"
+</code></pre>
+
+<p>Now that <code>eth0</code> will appear connected after a single run of the playbook(<code>ansible-playbook dhcp-setup-playbook.yaml -u pi</code>).</p>
+
+<pre><code class="language-shell">$ nmcli
+...
+eth0: connected to Wired connection 1
+        "eth0"
+        ethernet (bcmgenet), E4:5F:01:FC:A9:93, hw, mtu 1500
+        inet4 10.3.50.1/32
+        route4 10.3.50.0/24 metric 0
+        inet6 fe80::67a:8941:9ec7:7ddd/64
+        route6 fe80::/64 metric 1024
+...
+</code></pre>
+<p>If we re-run this playbook, you will see that some steps are skipped because of <code>when</code> statements validating <code>eth0_status.stdout in ["disconnected", "connecting"]</code>.</p>
+
+<p>Also, we don’t want to hardcode too much information in variables files, so let’s grap MAC address and save it for the future use.</p>
+
+<pre><code class="language-yaml">    - name: Extract the MAC address of eth0
+      ansible.builtin.set_fact:
+        eth0_mac: "{ { ansible_facts['eth0']['macaddress'] } }" #nevermind this awkward space between the brackets. otherwise it would not render correctly
+</code></pre>
+
+<p>Next, we need DHCP server.</p>
+
+<pre><code class="language-yaml">    - name: Install DHCP server
+      apt:
+        name: isc-dhcp-server
+</code></pre>
+
+<p>In the heart of this dhcp server lies a config file(<code>/etc/dhcp/dhcpd.conf</code>) that we need to create.
+We will template it using the saved earlier MAC address of <code>eth0</code> and some input variables which namely are:</p>
+
+<pre><code>---
+main_node_static_ip: 10.3.50.1
+cluster_subnet: 10.3.50.0
+cluster_broadcast: 10.3.50.255
+cluster_subnet_netmask: 255.255.255.0
+cluster_subnet_starting_ip: 10.3.50.10
+cluster_subnet_ending_ip: 10.3.50.20
+non_cluster_subnet: 192.168.0.0
+non_cluster_netmask: 255.255.255.0
+</code></pre>
+<p>This variables are stored locally in <code>group_vars/all.yaml</code> on my machine.</p>
+
+<p>Below you can find a template for <code>/etc/dhcp/dhcpd.conf</code> stored as <code>templates/dhcpd.conf</code> on my machine.</p>
+
+<pre><code class="language-conf">#once again nevermind this awkward space between the brackets. otherwise it would not render correctly
+ddns-update-style none;
+authoritative;
+log-facility local7;
+
+# No service will be given on this subnet
+subnet { { non_cluster_subnet } } netmask { { non_cluster_netmask } } {
+}
+
+# The internal cluster network
+group {
+   option broadcast-address { { cluster_broadcast } };
+   option routers { { main_node_static_ip } };
+   default-lease-time 600;
+   max-lease-time 7200;
+   option domain-name "cluster";
+   option domain-name-servers 8.8.8.8, 8.8.4.4;
+   subnet { { cluster_subnet } } netmask { { cluster_subnet_netmask } } {
+      # this is important as DHCP server will issue IPs sequally. So these two values help to set a predictable range
+      range { { cluster_subnet_starting_ip } } { { cluster_subnet_ending_ip } };
+
+      # Head Node
+      host cluster {
+         hardware ethernet { { eth0_mac } };
+         fixed-address { { main_node_static_ip } };
+      }
+
+   }
+}
+</code></pre>
+
+<p>This template will be rendered by the following task:</p>
+
+<pre><code class="language-yaml">    - name: Create /etc/dhcp/dhcpd.conf
+      ansible.builtin.template:
+        src: dhcpd.conf
+        dest: /etc/dhcp/dhcpd.conf
+        owner: root
+        group: root
+        mode: 0644
+</code></pre>
+
+<p>We also need to let DHCP server know about the config file and make some changes to <code>/etc/hosts</code></p>
+
+<pre><code class="language-yaml">
+    - name: Configure /etc/default/isc-dhcp-server
+      ansible.builtin.copy:
+        content: |
+          DHCPDv4_CONF=/etc/dhcp/dhcpd.conf
+          DHCPDv4_PID=/var/run/dhcpd.pid
+          INTERFACESv4="eth0"
+        dest: /etc/default/isc-dhcp-server
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Configure /etc/hosts
+      ansible.builtin.copy:
+        content: |
+          127.0.0.1	localhost
+          ::1		localhost ip6-localhost ip6-loopback
+          ff02::1		ip6-allnodes
+          ff02::2		ip6-allrouters
+          
+          127.0.1.1	caspar
+          127.0.1.1	cluster
+          
+          10.3.50.1	cluster
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+</code></pre>
+
+<p>At this point, the guide points to node reboot, so all settings are set into place. I have done it manually, as was not sure if I want this part of my playbooks.</p>
+
+<p>Once Caspar is up we can check lease list using <code>dhcp-lease-list</code> command. As I have unmanaged switch(it does not get itself an IP), I got an empty list. So we need to wait for a second node - Balthasar to boot up.</p>
+
+<h2 id="routing">Routing</h2>
+<p>Before booting Balthasar, we also need to make sure that routing part works correctly as DHCP server only provides us with a subnet and IPs.</p>
+
+<p>We do this by creating a separate playbook(mainly for simplicity of debugging) called <code>nat-setup-playbook.yaml</code>.
+First of all, we need enable NAT capabilities by setting <code>ip_forward</code> option to 1.</p>
+<pre><code class="language-yaml">- name: NAT setup
+  hosts: magi[0]
+  become: yes
+  tasks:
+    - name: Gather facts
+      ansible.builtin.setup:
+
+    - name: Configure IP forward
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        line: 'net.ipv4.ip_forward=1'
+        state: present
+</code></pre>
+
+<p>Then we install <code>iptables</code>:</p>
+
+<pre><code class="language-yaml">    - name: Install iptables
+      apt:
+        name: iptables
+</code></pre>
+
+<p>Once installed, we can configure iptables using the following tasks. It is purposely written in the way a duplicate rules are not written(thanks JetBrains Assistant for that):</p>
+
+<pre><code class="language-yaml">    - name: Ensure POSTROUTING MASQUERADE rule exists in iptables
+      ansible.builtin.shell: |
+        iptables -t nat -C POSTROUTING -o wlan0 -j MASQUERADE || iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+
+    - name: Ensure FORWARD RELATED,ESTABLISHED rule exists in iptables
+      ansible.builtin.shell: |
+        iptables -C FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT || iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+    - name: Ensure FORWARD ACCEPT rule from eth0 to wlan0 exists in iptables
+      ansible.builtin.shell: |
+        iptables -C FORWARD -i eth0 -o wlan0 -j ACCEPT || iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+</code></pre>
+
+<p><code>iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE</code> - Ensures outgoing packets from private networks are NAT-translated (masqueraded).</p>
+
+<p><code>iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT</code> - Allows return traffic for already established or related connections.</p>
+
+<p><code>iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT</code> - Enables new outgoing traffic from the private network to the public network.</p>
+
+<p>The tricky part about iptables is that they are not preserved automatically, so a few more tasks should be added:</p>
+
+<pre><code class="language-yaml">    - name: Persist iptables rules
+      ansible.builtin.shell:
+        cmd: iptables-save &gt; /etc/iptables.ipv4.nat
+
+    - name: Write script to /etc/rc.local
+      ansible.builtin.copy:
+        dest: /etc/rc.local
+        content: |
+          #!/bin/bash
+          _IP=$(hostname -I) || true
+          if [ "$_IP" ]; then
+            printf "My IP address is %s\n" "$_IP"
+          fi
+
+          iptables-restore &lt; /etc/iptables.ipv4.nat
+          
+          exit 0
+        owner: root
+        group: root
+        mode: '0755'
+</code></pre>
+<p>This ensures that iptables will be setup correctly after reboot.</p>
+
+<h2 id="balthasar-and-melchior">Balthasar and Melchior</h2>
+
+<p>As we are done setting up DHCP and NAT on Caspar, it is time to connect the remaining two nodes and validate if everything is in order.</p>
+
+<p><img src="../public/final-cluster.jpeg" alt="final-cluster.jpeg" /></p>
+
+<p>Once Balthasar is up, let’s SSH into it and see if we can connect to the internet.</p>
+
+<pre><code class="language-shell">$ ifconfig
+eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.3.50.10  netmask 255.255.255.0  broadcast 10.3.50.255
+        inet6 fe80::88fe:b645:43e8:aa83  prefixlen 64  scopeid 0x20&lt;link&gt;
+        ether e4:5f:01:fc:aa:29  txqueuelen 1000  (Ethernet)
+        RX packets 273  bytes 39557 (38.6 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 280  bytes 35241 (34.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+...
+</code></pre>
+<p>It seems that we got an IP from Caspar for <code>eth0</code>. So DHCP part works correctly.</p>
+
+<p>Can we ping 8.8.8.8?</p>
+<pre><code class="language-shell">$ ping -c 4 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3060ms
+</code></pre>
+<p>Uh-oh, we cannot. Strange. We have followed the guide as thorough we could. Can we at least ping Caspar?</p>
+
+<pre><code class="language-shell">$ ping -c 4 10.3.50.1
+PING 10.3.50.1 (10.3.50.1) 56(84) bytes of data.
+
+--- 10.3.50.1 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3061ms
+</code></pre>
+<p>Hmmm, something is not right. I can see some network activity on switch when I try to perform ping command.</p>
+
+<p>*double checks iptables*</p>
+
+<p>*double checks that net.ipv4.ip_forward=1*</p>
+
+<p>*googles*</p>
+
+<p>*googles*</p>
+
+<p>*googles*</p>
+
+<p>While taking to AI assistant about possible causes, I have noticed that phrase <code>ip route</code> is mentioned a few times. So I have asked,
+<code>Do I need ip route if I set iptables?</code> and response was:</p>
+
+<blockquote>
+  <p>Even though your iptables rules allow forwarding packets between interfaces and perform NAT (masquerading) on outgoing traffic, the routing table must explicitly define the path for the packets to reach their destination. Here’s why you needed to add the ip route command.</p>
+</blockquote>
+
+<p>Maybe the traffic originating from this network is not handled properly because the router does not understand it?</p>
+
+<p>Let’s check <code>ip routes</code>:</p>
+
+<pre><code class="language-shell">$ ip routes
+default via 192.168.0.1 dev wlan0 proto dhcp src 192.168.0.202 metric 600
+192.168.0.0/24 dev wlan0 proto kernel scope link src 192.168.0.202 metric 600
+</code></pre>
+
+<p>Hmm, strange. What if we create a route specifically for the internal network originating from <code>eht0</code> interface?</p>
+
+<pre><code class="language-shell">$  ip route add 10.3.50.0/24 dev eth0 proto static 
+</code></pre>
+<p>Now let’s try to a ping command again from Balthasar.</p>
+
+<pre><code class="language-shell">$ ping -c 4 10.3.50.1
+PING 10.3.50.1 (10.3.50.1) 56(84) bytes of data.
+64 bytes from 10.3.50.1: icmp_seq=1 ttl=64 time=0.361 ms
+64 bytes from 10.3.50.1: icmp_seq=2 ttl=64 time=0.224 ms
+64 bytes from 10.3.50.1: icmp_seq=3 ttl=64 time=0.293 ms
+64 bytes from 10.3.50.1: icmp_seq=4 ttl=64 time=0.209 ms
+
+--- 10.3.50.1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3056ms
+rtt min/avg/max/mdev = 0.209/0.271/0.361/0.060 ms
+
+$ ping -c 4 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=56 time=17.5 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=56 time=18.0 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=56 time=13.8 ms
+64 bytes from 8.8.8.8: icmp_seq=4 ttl=56 time=16.8 ms
+
+--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3005ms
+rtt min/avg/max/mdev = 13.763/16.523/18.013/1.653 ms
+</code></pre>
+
+<p>It works!</p>
+
+<p>Ip routes are also not preserved between restarts. Based on some internet suggestions, I have decided to set up a service to ensure this route is present on Caspar.</p>
+
+<pre><code class="language-yaml">
+- name: Create the IP route check script
+  ansible.builtin.copy:
+    dest: /usr/local/bin/check_ip_route.sh
+    content: |
+      #!/bin/bash
+
+      # Define the route to check
+      TARGET_ROUTE="10.3.50.0/24 dev eth0 proto static"
+
+      # Check if the route already exists
+      if ! ip route show | grep -q "$TARGET_ROUTE"; then
+          # Route does not exist, add it
+          ip route add 10.3.50.0/24 dev eth0 proto static
+          echo "Route added: $TARGET_ROUTE"
+      else
+          echo "Route already exists: $TARGET_ROUTE"
+      fi
+    mode: '0755'  # Set correct permissions for the script
+    owner: root
+    group: root
+
+- name: Create the systemd service file
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/check-ip-route.service
+    content: |
+      [Unit]
+      Description=Check and Add IP Route
+      After=network.target
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/check_ip_route.sh
+      RemainAfterExit=true
+      User=root
+      Group=root
+
+      [Install]
+      WantedBy=multi-user.target
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Reload systemd manager configuration
+  become: true
+  command: systemctl daemon-reload
+
+- name: Enable the IP route service
+  systemd:
+    name: check-ip-route.service
+    enabled: true
+    state: started
+</code></pre>
+
+<h2 id="end-notes">End notes</h2>
+<p>Never be afraid to ask your AI assistant dumb questions :)</p>
+
+<p><img src="../public/magi.jpeg" alt="magi.jpeg" /></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>
