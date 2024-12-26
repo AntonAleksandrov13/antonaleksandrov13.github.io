@@ -5,10 +5,10 @@ title: (Re)setting up my home Raspberry PI cluster - part 1
 
 ## Introduction
 A while back I was working on setting up 3 RPIs based on [this guide](https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/).
-Back then I was too excited to play around with new hardware and set up everything as soon as possible. I did not really account for the fact stuff might break and there is no real option how to restore it.
+Back then I was too excited to play around with new hardware and set up everything as soon as possible. I did not really account for the fact stuff might break and there is no real way to restore it.
 Of course, I could have followed the same guide from scratch, but how many times would I have to repeat the same process? Dreading this process, I have set this project on a shelf.
 
-In my day job just like any good SRE engineer, I am guided by DevOps principles of having repeatable processes. That's why the tools like Terraform, CloudCDK, Packer and Ansible are this popular and relevant right now in my opinion.
+In my day job just like any good SRE engineer, I am guided by DevOps principles of having repeatable processes. That's why the tools like Terraform, CloudCDK, Packer and Ansible are so popular and relevant right now in my opinion.
 
 So I thought that this holiday season, I will slow down the process a bit and re-assemble my cluster and configure a proper process around it.
 
@@ -44,7 +44,7 @@ This allowed for a "clean" looking setup without extra power cables and power so
 
 ## RPIs setup
 
-The setup is fairly straight forward. PoE hats were mounted on the top of GPIO pins.
+The setup is fairly straightforward. PoE hats were mounted on the top of GPIO pins.
 
 ![rpi-with-poe.jpeg](/public/rpi-with-poe.jpeg)
 
@@ -53,7 +53,7 @@ For this project, I have decided to use Raspberry Pi OS Lite as I am planning to
 So it was very convenient to use  Raspberry PI Imager to configure WLAN access and hostnames.
 
 ## Node naming
-Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion. 
+Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred to as MAGI) in the anime series Evangelion. 
 
 ![magi-eva.webp](/public/magi.gif)
 
@@ -62,7 +62,7 @@ Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are al
 ![first-rpi-connected.jpeg](/public/first-rpi-connected.jpeg)
 As soon as a SD card was installed and Ethernet cable is connected the head node - Caspar was booting up.
 
-Now, to connect to Casoar we need its IP first. As I have managed to forget admin password from my router, I had to dust up my apr knowledge with a useful arp-scan utility: 
+Now, to connect to Caspar we need its IP first. As I have managed to forget admin password from my router, I had to brush up on my ARP knowledge using the useful arp-scan utility: 
 
 ```shell
 $ sudo arp-scan --interface=en0 192.168.0.0/24
