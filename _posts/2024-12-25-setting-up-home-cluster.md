@@ -27,13 +27,13 @@ Usage of Ansible for this project is inspired by [www.ansiblefordevops.com](http
 
 ## What is the end goal?
 The idea is to have one RPI(we will call it a head node until a proper name is given) acting as a router and hosting DHCP server. Other RPIs would get IPs in a dedicated subnet and communicate with the outside world through the head node.
-I still want to preserve possibility of connecting to nodes using their home network IPs. This way I can preserve access if I break the head node.
+I still want to preserve the possibility of connecting to nodes using their home network IPs. This way I can preserve access if I break the head node.
 
 ![ascii-rpi-topology.png](/public/ascii-rpi-topology.png)
 
 ## Fans set up
 
-Last time I was setting up this cluster, I have cut some corners because I did not have soldering station, but this time I ready to set thing right.
+The last time I was setting up this cluster, I cut some corners because I did not have a soldering station, but this time I ready to set thing right.
 Two fans came with standard pin connector. It is not an option to use GPIO to power them up as PoE hat will take all the pins. I have used some of my old USB cables and got a pair of USB powered fans.
 
 ![fans.jpeg](/public/fans.jpeg)
@@ -53,16 +53,16 @@ For this project, I have decided to use Raspberry Pi OS Lite as I am planning to
 So it was very convenient to use  Raspberry PI Imager to configure WLAN access and hostnames.
 
 ## Node naming
-Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred to as MAGI) in the anime series Evangelion. 
+Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers (also collectively referred to as MAGI) in the anime series Evangelion. 
 
 ![magi-eva.webp](/public/magi.gif)
 
 ## Booting up the first node
 
 ![first-rpi-connected.jpeg](/public/first-rpi-connected.jpeg)
-As soon as a SD card was installed and Ethernet cable is connected the head node - Caspar was booting up.
+As soon as a SD card was installed and Ethernet cable is connected, the head node - Caspar was booting up.
 
-Now, to connect to Caspar we need its IP first. As I have managed to forget admin password from my router, I had to brush up on my ARP knowledge using the useful arp-scan utility: 
+Now, to connect to Caspar, we need its IP first. As I have managed to forget the admin password from my router, I had to brush up on my ARP knowledge using the useful arp-scan utility: 
 
 ```shell
 $ sudo arp-scan --interface=en0 192.168.0.0/24
@@ -79,16 +79,16 @@ Starting arp-scan 1.10.0 with 256 hosts (https://github.com/royhills/arp-scan)
 Ending arp-scan 1.10.0: 256 hosts scanned in 1.833 seconds (139.66 hosts/sec). 4 responded
 ```
 
-Knowing Caspar's IP we can test out some Ansible .
+Knowing Caspar's Ip, we can test out some Ansible.
 
-I have created `inventory.ini` with the following content:
+For this, I have created `inventory.ini` with the following content:
 
 ```
 [magi]
 192.168.0.202
 ```
 
-Using this file we can get free memory on the device using the following command:
+Using this file, we can get free memory on the device using the following command:
 
 ```shell
 $ ansible magi -a "free -h" -u pi
@@ -99,18 +99,18 @@ Mem:           3.7Gi       174Mi       3.5Gi       1.2Mi       139Mi       3.5Gi
 Swap:          511Mi          0B       511Mi
 ```
 
-Okay, now that we know that Caspar is live and kicking we start implementing its router capabilities.
+Okay, now that we know that Caspar is live and kicking, we start implementing its router capabilities.
 
 ## DHCP setup
 
 We will use a playbook to set up DHCP server which we will call `dhcp-setup-playbook.yaml`.
 
-First of all, we want to run `apt-get update` and `apt-get upgrade -y` on our system to make sure that we stay up to date. For this will add the following content into this notebook:
+First, we want to run `apt-get update` and `apt-get upgrade -y` on our system to make sure that we stay up to date. For this will add the following content into this notebook:
 
 ```yaml
 - name: DHCP setup
   hosts: magi[0] #we want to run this playbook only on Caspar
-  become: yes #at least most of the commands will require super user access
+  become: yes #at least most of the commands will require superuser access
   tasks:
     - name: Update the package list
       apt:
@@ -144,7 +144,7 @@ We need to add a few tasks to connect `eth0`:
 ```
 
 This would allow us to check the status of `eth0`. We don't want to reconfigure it if `eth0` is already connected.
-Then based on guide let's modify the connection and restart it only if it is in status `disconnected` or `connecting`(about this status I have learnt accidentally, when I have wiped Caspar clean to test out all my playbooks from scratch. It seems to appear when the system is loading and interfaces trying to figure out their status).
+Then based on the guide let's modify the connection and restart it only if it is in status `disconnected` or `connecting`(about this status I have learnt accidentally, when I have wiped Caspar clean to test out all my playbooks from scratch. It seems to appear when the system is loading and interfaces trying to figure out their status).
 
 ```yaml
     - name: Configure Wired connection 1 with static IP
@@ -179,7 +179,7 @@ eth0: connected to Wired connection 1
 ```
 If we re-run this playbook, you will see that some steps are skipped because of `when` statements validating `eth0_status.stdout in ["disconnected", "connecting"]`.
 
-Also, we don't want to hardcode too much information in variables files, so let's grap MAC address and save it for the future use.
+Also, we don't want to hardcode too much information in a variable file, so let's grap MAC address and save it for future use.
 
 ```yaml
     - name: Extract the MAC address of eth0
@@ -187,7 +187,7 @@ Also, we don't want to hardcode too much information in variables files, so let'
         eth0_mac: "{ { ansible_facts['eth0']['macaddress'] } }" #nevermind this awkward space between the brackets. otherwise it would not render correctly
 ```
 
-Next, we need DHCP server.
+Next, we need a DHCP server.
 
 ```yaml
     - name: Install DHCP server
@@ -196,7 +196,7 @@ Next, we need DHCP server.
 ```
 
 In the heart of this dhcp server lies a config file(`/etc/dhcp/dhcpd.conf`) that we need to create.
-We will template it using the saved earlier MAC address of `eth0` and some input variables which namely are:
+We will template this file using the saved earlier MAC address of `eth0` and some input variables that namely are:
 
 ```
 ---
@@ -209,7 +209,7 @@ cluster_subnet_ending_ip: 10.3.50.20
 non_cluster_subnet: 192.168.0.0
 non_cluster_netmask: 255.255.255.0
 ```
-This variables are stored locally in `group_vars/all.yaml` on my machine.
+These variables are stored locally in `group_vars/all.yaml` on my machine.
 
 Below you can find a template for `/etc/dhcp/dhcpd.conf` stored as `templates/dhcpd.conf` on my machine.
 
@@ -292,13 +292,13 @@ We also need to let DHCP server know about the config file and make some changes
 
 At this point, the guide points to node reboot, so all settings are set into place. I have done it manually, as was not sure if I want this part of my playbooks.
 
-Once Caspar is up we can check lease list using `dhcp-lease-list` command. As I have unmanaged switch(it does not get itself an IP), I got an empty list. So we need to wait for a second node - Balthasar to boot up.
+Once Caspar is up we can check a lease list using `dhcp-lease-list` command. As I have unmanaged switch(it does not get itself an IP), I got an empty list. So we need to wait for a second node - Balthasar to boot up.
 
 ## Routing 
-Before booting Balthasar, we also need to make sure that routing part works correctly as DHCP server only provides us with a subnet and IPs.
+Before booting Balthasar, we also need to make sure that the routing part works correctly as DHCP server only provides us with a subnet and IPs.
 
-We do this by creating a separate playbook(mainly for simplicity of debugging) called `nat-setup-playbook.yaml`.
-First of all, we need enable NAT capabilities by setting `ip_forward` option to 1.
+We do this by creating a separate playbook (mainly for simplicity of debugging) called `nat-setup-playbook.yaml`.
+First, we need to enable NAT capabilities by setting `ip_forward` option to 1.
 ```yaml
 - name: NAT setup
   hosts: magi[0]
@@ -322,7 +322,7 @@ Then we install `iptables`:
         name: iptables
 ```
 
-Once installed, we can configure iptables using the following tasks. It is purposely written in the way a duplicate rules are not written(thanks JetBrains Assistant for that):
+Once installed, we can configure iptables using the following tasks. It is purposely written in the way duplicate rules are not written (thanks JetBrains Assistant for that):
 
 ```yaml
     - name: Ensure POSTROUTING MASQUERADE rule exists in iptables
@@ -368,7 +368,7 @@ The tricky part about iptables is that they are not preserved automatically, so 
         group: root
         mode: '0755'
 ```
-This ensures that iptables will be setup correctly after reboot.
+This ensures that iptables will be set up correctly after reboot.
 
 ## Balthasar and Melchior
 
@@ -390,7 +390,7 @@ eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ...
 ```
-It seems that we got an IP from Caspar for `eth0`. So DHCP part works correctly.
+It seems that we got an IP from Caspar for `eth0`. So the DHCP part works correctly.
 
 Can we ping 8.8.8.8?
 ```shell
