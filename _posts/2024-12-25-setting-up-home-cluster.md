@@ -29,24 +29,24 @@ Usage of Ansible for this project is inspired by [www.ansiblefordevops.com](http
 The idea is to have one RPI(we will call it a head node until a proper name is given) acting as a router and hosting DHCP server. Other RPIs would get IPs in a dedicated subnet and communicate with the outside world through the head node.
 I still want to preserve possibility of connecting to nodes using their home network IPs. This way I can preserve access if I break the head node.
 
-![ascii-rpi-topology.png](../public/ascii-rpi-topology.png)
+![ascii-rpi-topology.png](/public/ascii-rpi-topology.png)
 
 ## Fans set up
 
 Last time I was setting up this cluster, I have cut some corners because I did not have soldering station, but this time I ready to set thing right.
 Two fans came with standard pin connector. It is not an option to use GPIO to power them up as PoE hat will take all the pins. I have used some of my old USB cables and got a pair of USB powered fans.
 
-![fans.jpeg](../public/fans.jpeg)
+![fans.jpeg](/public/fans.jpeg)
 
 ## Switch with PoE
-![netgear-switch.jpeg](../public/netgear-switch.jpeg)
+![netgear-switch.jpeg](/public/netgear-switch.jpeg)
 This allowed for a "clean" looking setup without extra power cables and power sources. 
 
 ## RPIs setup
 
 The setup is fairly straight forward. PoE hats were mounted on the top of GPIO pins.
 
-![rpi-with-poe.jpeg](../public/rpi-with-poe.jpeg)
+![rpi-with-poe.jpeg](/public/rpi-with-poe.jpeg)
 
 For this project, I have decided to use Raspberry Pi OS Lite as I am planning to have a Kubernetes cluster here later on.
 
@@ -55,11 +55,11 @@ So it was very convenient to use  Raspberry PI Imager to configure WLAN access a
 ## Node naming
 Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion. 
 
-![magi-eva.webp](../public/magi-eva.webp)
+![magi-eva.webp](/public/magi-eva.webp)
 
 ## Booting up the first node
 
-![first-rpi-connected.jpeg](../public/first-rpi-connected.jpeg)
+![first-rpi-connected.jpeg](/public/first-rpi-connected.jpeg)
 As soon as a SD card was installed and Ethernet cable is connected the head node - Caspar was booting up.
 
 Now, to connect to Casoar we need its IP first. As I have managed to forget admin password from my router, I had to dust up my apr knowledge with a useful arp-scan utility: 
@@ -374,7 +374,7 @@ This ensures that iptables will be setup correctly after reboot.
 
 As we are done setting up DHCP and NAT on Caspar, it is time to connect the remaining two nodes and validate if everything is in order.
 
-![final-cluster.jpeg](../public/final-cluster.jpeg)
+![final-cluster.jpeg](/public/final-cluster.jpeg)
 
 Once Balthasar is up, let's SSH into it and see if we can connect to the internet.
 
@@ -530,4 +530,4 @@ Never be afraid to ask your AI assistant dumb questions :)
 
 
 
-![magi.jpeg](../public/magi.jpeg)
+![magi.jpeg](/public/magi.jpeg)

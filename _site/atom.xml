@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
  <title>Anton's blog</title>
- <link href="https://antonaleksandrov13.github.io/atom.xml" rel="self"/>
- <link href="https://antonaleksandrov13.github.io/"/>
- <updated>2024-12-26T12:55:12+01:00</updated>
- <id>https://antonaleksandrov13.github.io</id>
+ <link href="http://localhost:4000/atom.xml" rel="self"/>
+ <link href="http://localhost:4000/"/>
+ <updated>2024-12-26T12:57:03+01:00</updated>
+ <id>http://localhost:4000</id>
  <author>
    <name>Anton Aleksandrov</name>
    <email></email>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>(Re)setting up my home Raspberry PI cluster - part 1</title>
-   <link href="https://antonaleksandrov13.github.io/2024/12/25/setting-up-home-cluster/"/>
+   <link href="http://localhost:4000/2024/12/25/setting-up-home-cluster/"/>
    <updated>2024-12-25T00:00:00+01:00</updated>
-   <id>https://antonaleksandrov13.github.io/2024/12/25/setting-up-home-cluster</id>
+   <id>http://localhost:4000/2024/12/25/setting-up-home-cluster</id>
    <content type="html">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;A while back I was working on setting up 3 RPIs based on &lt;a href=&quot;https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/&quot;&gt;this guide&lt;/a&gt;.
 Back then I was too excited to play around with new hardware and set up everything as soon as possible. I did not really account for the fact stuff might break and there is no real option how to restore it.
@@ -44,24 +44,24 @@ Usage of Ansible for this project is inspired by &lt;a href=&quot;https://www.an
 &lt;p&gt;The idea is to have one RPI(we will call it a head node until a proper name is given) acting as a router and hosting DHCP server. Other RPIs would get IPs in a dedicated subnet and communicate with the outside world through the head node.
 I still want to preserve possibility of connecting to nodes using their home network IPs. This way I can preserve access if I break the head node.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/ascii-rpi-topology.png&quot; alt=&quot;ascii-rpi-topology.png&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/ascii-rpi-topology.png&quot; alt=&quot;ascii-rpi-topology.png&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;fans-set-up&quot;&gt;Fans set up&lt;/h2&gt;
 
 &lt;p&gt;Last time I was setting up this cluster, I have cut some corners because I did not have soldering station, but this time I ready to set thing right.
 Two fans came with standard pin connector. It is not an option to use GPIO to power them up as PoE hat will take all the pins. I have used some of my old USB cables and got a pair of USB powered fans.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/fans.jpeg&quot; alt=&quot;fans.jpeg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/fans.jpeg&quot; alt=&quot;fans.jpeg&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;switch-with-poe&quot;&gt;Switch with PoE&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;../public/netgear-switch.jpeg&quot; alt=&quot;netgear-switch.jpeg&quot; /&gt;
+&lt;p&gt;&lt;img src=&quot;/public/netgear-switch.jpeg&quot; alt=&quot;netgear-switch.jpeg&quot; /&gt;
 This allowed for a “clean” looking setup without extra power cables and power sources.&lt;/p&gt;
 
 &lt;h2 id=&quot;rpis-setup&quot;&gt;RPIs setup&lt;/h2&gt;
 
 &lt;p&gt;The setup is fairly straight forward. PoE hats were mounted on the top of GPIO pins.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/rpi-with-poe.jpeg&quot; alt=&quot;rpi-with-poe.jpeg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/rpi-with-poe.jpeg&quot; alt=&quot;rpi-with-poe.jpeg&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;For this project, I have decided to use Raspberry Pi OS Lite as I am planning to have a Kubernetes cluster here later on.&lt;/p&gt;
 
@@ -70,11 +70,11 @@ This allowed for a “clean” looking setup without extra power cables and powe
 &lt;h2 id=&quot;node-naming&quot;&gt;Node naming&lt;/h2&gt;
 &lt;p&gt;Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/magi-eva.webp&quot; alt=&quot;magi-eva.webp&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/magi-eva.webp&quot; alt=&quot;magi-eva.webp&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;booting-up-the-first-node&quot;&gt;Booting up the first node&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/first-rpi-connected.jpeg&quot; alt=&quot;first-rpi-connected.jpeg&quot; /&gt;
+&lt;p&gt;&lt;img src=&quot;/public/first-rpi-connected.jpeg&quot; alt=&quot;first-rpi-connected.jpeg&quot; /&gt;
 As soon as a SD card was installed and Ethernet cable is connected the head node - Caspar was booting up.&lt;/p&gt;
 
 &lt;p&gt;Now, to connect to Casoar we need its IP first. As I have managed to forget admin password from my router, I had to dust up my apr knowledge with a useful arp-scan utility:&lt;/p&gt;
@@ -371,7 +371,7 @@ First of all, we need enable NAT capabilities by setting &lt;code&gt;ip_forward&
 
 &lt;p&gt;As we are done setting up DHCP and NAT on Caspar, it is time to connect the remaining two nodes and validate if everything is in order.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/final-cluster.jpeg&quot; alt=&quot;final-cluster.jpeg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/final-cluster.jpeg&quot; alt=&quot;final-cluster.jpeg&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Once Balthasar is up, let’s SSH into it and see if we can connect to the internet.&lt;/p&gt;
 
@@ -520,7 +520,7 @@ rtt min/avg/max/mdev = 13.763/16.523/18.013/1.653 ms
 &lt;h2 id=&quot;end-notes&quot;&gt;End notes&lt;/h2&gt;
 &lt;p&gt;Never be afraid to ask your AI assistant dumb questions :)&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../public/magi.jpeg&quot; alt=&quot;magi.jpeg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/magi.jpeg&quot; alt=&quot;magi.jpeg&quot; /&gt;&lt;/p&gt;
 </content>
  </entry>
  

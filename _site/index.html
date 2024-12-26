@@ -120,24 +120,24 @@ Usage of Ansible for this project is inspired by <a href="https://www.ansiblefor
 <p>The idea is to have one RPI(we will call it a head node until a proper name is given) acting as a router and hosting DHCP server. Other RPIs would get IPs in a dedicated subnet and communicate with the outside world through the head node.
 I still want to preserve possibility of connecting to nodes using their home network IPs. This way I can preserve access if I break the head node.</p>
 
-<p><img src="../public/ascii-rpi-topology.png" alt="ascii-rpi-topology.png" /></p>
+<p><img src="/public/ascii-rpi-topology.png" alt="ascii-rpi-topology.png" /></p>
 
 <h2 id="fans-set-up">Fans set up</h2>
 
 <p>Last time I was setting up this cluster, I have cut some corners because I did not have soldering station, but this time I ready to set thing right.
 Two fans came with standard pin connector. It is not an option to use GPIO to power them up as PoE hat will take all the pins. I have used some of my old USB cables and got a pair of USB powered fans.</p>
 
-<p><img src="../public/fans.jpeg" alt="fans.jpeg" /></p>
+<p><img src="/public/fans.jpeg" alt="fans.jpeg" /></p>
 
 <h2 id="switch-with-poe">Switch with PoE</h2>
-<p><img src="../public/netgear-switch.jpeg" alt="netgear-switch.jpeg" />
+<p><img src="/public/netgear-switch.jpeg" alt="netgear-switch.jpeg" />
 This allowed for a “clean” looking setup without extra power cables and power sources.</p>
 
 <h2 id="rpis-setup">RPIs setup</h2>
 
 <p>The setup is fairly straight forward. PoE hats were mounted on the top of GPIO pins.</p>
 
-<p><img src="../public/rpi-with-poe.jpeg" alt="rpi-with-poe.jpeg" /></p>
+<p><img src="/public/rpi-with-poe.jpeg" alt="rpi-with-poe.jpeg" /></p>
 
 <p>For this project, I have decided to use Raspberry Pi OS Lite as I am planning to have a Kubernetes cluster here later on.</p>
 
@@ -146,11 +146,11 @@ This allowed for a “clean” looking setup without extra power cables and powe
 <h2 id="node-naming">Node naming</h2>
 <p>Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion.</p>
 
-<p><img src="../public/magi-eva.webp" alt="magi-eva.webp" /></p>
+<p><img src="/public/magi-eva.webp" alt="magi-eva.webp" /></p>
 
 <h2 id="booting-up-the-first-node">Booting up the first node</h2>
 
-<p><img src="../public/first-rpi-connected.jpeg" alt="first-rpi-connected.jpeg" />
+<p><img src="/public/first-rpi-connected.jpeg" alt="first-rpi-connected.jpeg" />
 As soon as a SD card was installed and Ethernet cable is connected the head node - Caspar was booting up.</p>
 
 <p>Now, to connect to Casoar we need its IP first. As I have managed to forget admin password from my router, I had to dust up my apr knowledge with a useful arp-scan utility:</p>
@@ -447,7 +447,7 @@ First of all, we need enable NAT capabilities by setting <code>ip_forward</code>
 
 <p>As we are done setting up DHCP and NAT on Caspar, it is time to connect the remaining two nodes and validate if everything is in order.</p>
 
-<p><img src="../public/final-cluster.jpeg" alt="final-cluster.jpeg" /></p>
+<p><img src="/public/final-cluster.jpeg" alt="final-cluster.jpeg" /></p>
 
 <p>Once Balthasar is up, let’s SSH into it and see if we can connect to the internet.</p>
 
@@ -596,7 +596,7 @@ rtt min/avg/max/mdev = 13.763/16.523/18.013/1.653 ms
 <h2 id="end-notes">End notes</h2>
 <p>Never be afraid to ask your AI assistant dumb questions :)</p>
 
-<p><img src="../public/magi.jpeg" alt="magi.jpeg" /></p>
+<p><img src="/public/magi.jpeg" alt="magi.jpeg" /></p>
 
   </div>
   
