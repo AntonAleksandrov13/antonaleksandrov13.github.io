@@ -8,7 +8,7 @@ permalink:        pretty
 # Setup
 title:            Anton's blog
 description:      'DevOps engineer with a passion towards AWS Cloud, Kubernetes, RaspberryPI and IoT projects'
-url:              https://github.com/AntonAleksandrov13
+url:              https://antonaleksandrov13.github.io
 baseurl:          /
 
 author:
