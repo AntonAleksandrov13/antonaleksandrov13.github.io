@@ -9,7 +9,7 @@ permalink:        pretty
 title:            Anton's blog
 description:      'DevOps engineer with a passion towards AWS Cloud, Kubernetes, RaspberryPI and IoT projects'
 url:              https://antonaleksandrov13.github.io
-baseurl:          /
+
 
 author:
   name:           'Anton Aleksandrov'
@@ -17,4 +17,5 @@ author:
 
 paginate:         5
 
-
+plugins:
+  - "jekyll-github-metadata"
