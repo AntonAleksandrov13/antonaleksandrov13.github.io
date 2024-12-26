@@ -55,7 +55,7 @@ So it was very convenient to use  Raspberry PI Imager to configure WLAN access a
 ## Node naming
 Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion. 
 
-![magi-eva.webp](/public/magi-eva.webp)
+![magi-eva.webp](/public/magi.gif)
 
 ## Booting up the first node
 

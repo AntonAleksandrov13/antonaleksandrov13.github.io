@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
  <title>Anton's blog</title>
- <link href="https://antonaleksandrov13.github.io/atom.xml" rel="self"/>
- <link href="https://antonaleksandrov13.github.io/"/>
- <updated>2024-12-26T12:59:05+01:00</updated>
- <id>https://antonaleksandrov13.github.io</id>
+ <link href="http://localhost:4000/atom.xml" rel="self"/>
+ <link href="http://localhost:4000/"/>
+ <updated>2024-12-26T13:07:14+01:00</updated>
+ <id>http://localhost:4000</id>
  <author>
    <name>Anton Aleksandrov</name>
    <email></email>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>(Re)setting up my home Raspberry PI cluster - part 1</title>
-   <link href="https://antonaleksandrov13.github.io/2024/12/25/setting-up-home-cluster/"/>
+   <link href="http://localhost:4000/2024/12/25/setting-up-home-cluster/"/>
    <updated>2024-12-25T00:00:00+01:00</updated>
-   <id>https://antonaleksandrov13.github.io/2024/12/25/setting-up-home-cluster</id>
+   <id>http://localhost:4000/2024/12/25/setting-up-home-cluster</id>
    <content type="html">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;A while back I was working on setting up 3 RPIs based on &lt;a href=&quot;https://www.raspberrypi.com/tutorials/cluster-raspberry-pi-tutorial/&quot;&gt;this guide&lt;/a&gt;.
 Back then I was too excited to play around with new hardware and set up everything as soon as possible. I did not really account for the fact stuff might break and there is no real option how to restore it.
@@ -70,7 +70,7 @@ This allowed for a “clean” looking setup without extra power cables and powe
 &lt;h2 id=&quot;node-naming&quot;&gt;Node naming&lt;/h2&gt;
 &lt;p&gt;Hostnames I have decided to use are Caspar, Balthasar and Melchior. These are also known as Magi from the Gospel of Matthew, but I have chosen these names after 3 computers(also collectively referred as MAGI) in anime series Evangelion.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/public/magi-eva.webp&quot; alt=&quot;magi-eva.webp&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/public/magi.gif&quot; alt=&quot;magi-eva.webp&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;booting-up-the-first-node&quot;&gt;Booting up the first node&lt;/h2&gt;
 
